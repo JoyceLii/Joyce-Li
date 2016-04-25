@@ -9,6 +9,7 @@ import java.io.IOException;
  *  it represents, and how to use it.
  *
  *  @author Ruoting Li
+ *  @author Camden Fischer
  *  @version (2016.04.12)
  */
 public class MainClass implements IHuffConstants
@@ -21,6 +22,7 @@ public class MainClass implements IHuffConstants
      */
     public static void main(String[ ] args) {
         CharCounter cc = new CharCounter();
+        CountDisplay a = new CountDisplay();
 
         BitInputStream bit = null;
         try
@@ -54,6 +56,9 @@ public class MainClass implements IHuffConstants
         }
 
         }
+
+        a.showCodings();
+
 
 
     }
