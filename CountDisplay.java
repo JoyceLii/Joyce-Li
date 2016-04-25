@@ -27,14 +27,14 @@ public class CountDisplay
 
     static MinHeap      Hheap;
 
+    private int[]       coding;
+
 
     public void initialize(InputStream stream)
     {
         try
         {
-            bits = new BitInputStream(
-                new FileInputStream(
-                    "X:\\Documents\\Spring 2016\\CSE 017\\text1.txt"));
+            bits = new BitInputStream(new FileInputStream("test.txt"));
         }
         catch (FileNotFoundException e)
         {
@@ -50,6 +50,7 @@ public class CountDisplay
 
         try
         {
+            bits = new BitInputStream(new FileInputStream("test.txt"));
             cc.countAll(bits);
         }
         catch (IOException e)
@@ -74,6 +75,7 @@ public class CountDisplay
 
         try
         {
+            bits = new BitInputStream(new FileInputStream("test.txt"));
             cc.countAll(bits);
         }
         catch (IOException e)
@@ -97,26 +99,16 @@ public class CountDisplay
             if (cc.getCount(i) != 0)
             {
                 treeArr[x] = new HuffTree((char)i, cc.getCount(i));
+                x++;
             }
         }
 
-        String[] s = new String[255];
-        Hheap = new MinHeap(treeArr, count, 255);
-        for (int i = 0; i < count; i++)
-        {
-            if (Hheap.isLeaf(i))
-            {
-                s = traversal(
-                    (TreeNode)treeArr[i].root(),
-                    treeArr[i].toString(),
-                    "");
-            }
-        }
+        Hheap = new MinHeap(treeArr, count, 256);
+        HuffTree tree = buildTree(Hheap);
+        coding = new int[count];
 
-        for (int i = 0; i < s.length; i++)
-        {
-            System.out.print(s[i]);
-        }
+        traversal(tree.root(), coding, 0);
+
     }
 
 
@@ -124,37 +116,47 @@ public class CountDisplay
     /**
      * create a method called traversal to encode
      *
-     * @param root
-     *            is a TreeNode type
-     * @param s
-     *            is a String type
-     * @return return the String[] type array
+     * @param node
+     *            is a HuffBaseNode type
+     * @param codes
+     *            is an integer array type
+     * @param top
+     *            is an integer type
      */
-    public String[] traversal(TreeNode root, String letter, String s)
+    public void traversal(HuffBaseNode node, int[] codes, int top)
     {
-        String tempCode = "";
-        if (root.myLeft == null && root.myRight == null)
+        if (((HuffInternalNode)node).left() != null)
         {
-            if (root != null && root.equals(letter))
-                tempCode = s;
+            codes[top] = 0;
+            traversal(((HuffInternalNode)node).left(), codes, top + 1);
         }
-        else
+        if (((HuffInternalNode)node).right() != null)
         {
-            if (root.myLeft != null)
-            {
-                traversal(root.myLeft, letter, s + "0");
-            }
-            if (root.myRight != null)
-            {
-                traversal(root.myRight, letter, s + "1");
-            }
+            codes[top] = 1;
+            traversal(((HuffInternalNode)node).right(), codes, top + 1);
         }
-        String[] array = new String[tempCode.length()];
-        for (int i = 0; i < array.length; i++)
+        if (node.isLeaf())
         {
-            array[i] = String.valueOf(tempCode.charAt(i));
+            System.out.printf("%c: ", ((HuffLeafNode)node).element());
+            printArray(codes, top);
         }
-        return array;
+
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * create a method called printArray to print the encoding
+     * @param array is an integer array
+     * @param n is an integer
+     */
+    public void printArray(int array[], int n)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            System.out.printf("%d", array[i]);
+            System.out.println();
+        }
     }
 
 
@@ -172,7 +174,7 @@ public class CountDisplay
     }
 
 
-    static HuffTree buildTree()
+    static HuffTree buildTree(MinHeap Hheap)
     {
         HuffTree tmp1, tmp2, tmp3 = null;
 
