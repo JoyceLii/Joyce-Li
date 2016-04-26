@@ -29,6 +29,11 @@ public class CountDisplay
 
     private int[]       coding;
 
+    HuffTree            tree;
+
+    CountDisplay countDisplay;
+
+
 
     public void initialize(InputStream stream)
     {
@@ -91,7 +96,7 @@ public class CountDisplay
                 count++;
             }
         }
-        HuffTree[] treeArr = new HuffTree[count];
+        HuffTree[] treeArr = new HuffTree[count + 1];
         int x = 0;
         for (int i = 0; i < 256; i++) // creating an array of trees that have
                                       // non zero counts
@@ -102,6 +107,7 @@ public class CountDisplay
                 x++;
             }
         }
+        treeArr[count + 1] = new HuffTree((char)PSEUDO_EOF, 1);
 
         Hheap = new MinHeap(treeArr, count, 256);
         HuffTree tree = buildTree(Hheap);
@@ -147,8 +153,11 @@ public class CountDisplay
     // ----------------------------------------------------------
     /**
      * create a method called printArray to print the encoding
-     * @param array is an integer array
-     * @param n is an integer
+     *
+     * @param array
+     *            is an integer array
+     * @param n
+     *            is an integer
      */
     public void printArray(int array[], int n)
     {
@@ -162,8 +171,74 @@ public class CountDisplay
 
     public void write(InputStream stream, File file, boolean force)
     {
-        // TODO Auto-generated method stub
+        BitOutputStream out = new BitOutputStream("test.txt");
+        out.write(BITS_PER_INT, MAGIC_NUMBER);
+        traverse(tree.root(), out);
+        out.write(1, 1);
+        out.write(9, PSEUDO_EOF);
+        String [] array = new String[257];
+        int count = 0;
 
+        BitInputStream bits;
+        try
+        {
+            bits = new BitInputStream(new FileInputStream("test.txt"));
+            int inbits;
+            try
+            {
+                while((inbits = bits.read(BITS_PER_WORD)) != -1) {
+                    for (int k = 0; k < ALPH_SIZE; k++) {
+                          int occs = cc.getCount(k);
+                          for(int i = 0;i<array.length;i++) {
+                              if (i == occs) {
+
+                              }
+                          }
+                    }
+                }
+
+            }
+            catch (IOException e)
+            {
+
+                e.printStackTrace();
+            }
+        }
+        catch (FileNotFoundException e1)
+        {
+
+            e1.printStackTrace();
+        }
+
+        out.close();
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * Preorder traversal that writes 1s and 0s as needed. part 3 step 2
+     *
+     * @param root
+     *            of hufftree
+     * @param out
+     *            output stream
+     */
+    public void traverse(HuffBaseNode root, BitOutputStream out)
+    {
+        if (root == null)
+        {
+            return;
+        }
+        if (!root.isLeaf())
+        {
+            out.write(1, 0);
+        }
+        else
+        {
+            out.write(1, 1);
+            out.write(9, ((HuffLeafNode)root).element());
+        }
+        traverse(((HuffInternalNode)root).left(), out);
     }
 
 
