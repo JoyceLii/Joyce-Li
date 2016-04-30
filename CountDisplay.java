@@ -27,12 +27,11 @@ public class CountDisplay
 
     static MinHeap      Hheap;
 
-    private int[]       coding;
+    private String[]       coding;
 
-    HuffTree            tree;
+    ArrayListStack<String> stack = new ArrayListStack<String>(      );
 
-    CountDisplay countDisplay;
-
+    HuffTree tree;
 
 
     public void initialize(InputStream stream)
@@ -107,13 +106,12 @@ public class CountDisplay
                 x++;
             }
         }
-        treeArr[count + 1] = new HuffTree((char)PSEUDO_EOF, 1);
+        //treeArr[count + 1] = new HuffTree((char)PSEUDO_EOF, 1);
 
         Hheap = new MinHeap(treeArr, count, 256);
-        HuffTree tree = buildTree(Hheap);
-        coding = new int[count];
-
-        traversal(tree.root(), coding, 0);
+        HuffTree tree1 = buildTree(Hheap);
+        System.out.println();
+        traversal(tree1.root(), count, 0);
 
     }
 
@@ -124,30 +122,43 @@ public class CountDisplay
      *
      * @param node
      *            is a HuffBaseNode type
-     * @param codes
+     * @param count
      *            is an integer array type
-     * @param top
+     * @param index
      *            is an integer type
      */
-    public void traversal(HuffBaseNode node, int[] codes, int top)
+    public void traversal(HuffBaseNode node, int count, int index)
     {
-        if (((HuffInternalNode)node).left() != null)
-        {
-            codes[top] = 0;
-            traversal(((HuffInternalNode)node).left(), codes, top + 1);
-        }
-        if (((HuffInternalNode)node).right() != null)
-        {
-            codes[top] = 1;
-            traversal(((HuffInternalNode)node).right(), codes, top + 1);
-        }
-        if (node.isLeaf())
-        {
-            System.out.printf("%c: ", ((HuffLeafNode)node).element());
-            printArray(codes, top);
+        coding = new String[count];
+        if(node == null) {
+            return;
         }
 
+        if(node.isLeaf()) {
+            String s = new String();
+            for(int i = 0; i<stack.size();i++) {
+                   s += stack.get(i);
+            }
+            System.out.println(((HuffLeafNode)node).element()+" "+s);
+            coding[index] = s;
+            index++;
+            stack.pop();
+        }
+
+        else {
+            stack.push("0");
+            traversal(((HuffInternalNode)node).left(),count,index+1);
+            stack.push("1");
+            traversal(((HuffInternalNode)node).right(),count,index+1);
+            if(stack.size() > 0) {
+                stack.pop();
+            }
+        }
+
+
     }
+
+
 
 
     // ----------------------------------------------------------
