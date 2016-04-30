@@ -7,6 +7,7 @@ import java.io.InputStream;
  * details about its purpose, what abstraction it represents, and how to use it.
  *
  * @author Ruoting Li
+ * @author Camden Fischer
  * @version (2016.04.12)
  */
 public class CharCounter
@@ -48,7 +49,7 @@ public class CharCounter
 
         while ((inbits = bits.read(BITS_PER_WORD)) != -1)
         {
-            System.out.println((char)inbits);
+            System.out.print((char)inbits);
             add(inbits);
             count++;
         }
