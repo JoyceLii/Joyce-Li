@@ -57,6 +57,8 @@ public class MainClass
         }
 
         a.showCodings();
+        System.out.println();
+        a.displayCoding();
 
     }
 }
