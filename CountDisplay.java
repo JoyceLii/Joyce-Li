@@ -10,7 +10,7 @@ import java.io.OutputStream;
  * Write a one-sentence summary of your class here. Follow it with additional
  * details about its purpose, what abstraction it represents, and how to use it.
  *
- * @author Camden Fischer
+ * @author Camden Fischer Ruoting Li
  * @version Apr 11, 2016
  */
 public class CountDisplay
@@ -19,7 +19,7 @@ public class CountDisplay
     /**
      * Creating a CharCounter
      */
-    ICharCounter           cc    = new CharCounter();
+    ICharCounter           cc     = new CharCounter();
     /**
      * Creating a BitInputStream
      */
@@ -29,11 +29,14 @@ public class CountDisplay
 
     private String[]       coding;
 
-    ArrayListStack<String> stack = new ArrayListStack<String>();
+    ArrayListStack<String> stack  = new ArrayListStack<String>();
 
     HuffTree               tree;
 
-    int number = 0;
+    private int            number = 0;
+    private int            bit;
+
+    private HuffBaseNode   node;
 
 
     public void initialize(InputStream stream)
@@ -108,7 +111,7 @@ public class CountDisplay
                 x++;
             }
         }
-        treeArr[count + 1] = new HuffTree((char)PSEUDO_EOF, 1);
+        // treeArr[count + 1] = new HuffTree((char)PSEUDO_EOF, 1);
 
         Hheap = new MinHeap(treeArr, count, 256);
         HuffTree tree1 = buildTree(Hheap);
@@ -160,7 +163,7 @@ public class CountDisplay
 
     // ----------------------------------------------------------
     /**
-     * create a method called disphayCoding
+     * create a method called displayCoding
      */
     public void displayCoding()
     {
@@ -188,12 +191,14 @@ public class CountDisplay
             {
                 while ((inbits = bits.read(BITS_PER_WORD)) != -1)
                 {
-                    for(int i = 0;i<coding.length;i++) {
+                    for (int i = 0; i < coding.length; i++)
+                    {
                         encoding += coding[i];
                     }
                     encodingCharArray = encoding.toCharArray();
-                    for(int j = 0;j<encodingCharArray.length;j++) {
-                        out.write(1,(int)encodingCharArray[j]);
+                    for (int j = 0; j < encodingCharArray.length; j++)
+                    {
+                        out.write(1, (int)encodingCharArray[j]);
                     }
                 }
 
@@ -244,11 +249,88 @@ public class CountDisplay
 
     public void uncompress(InputStream in, OutputStream out)
     {
-        // TODO Auto-generated method stub
-
+        int inbits;
+        int magic;
+        try
+        {
+            magic = ((BitInputStream)in).read(BITS_PER_INT);
+            if (magic != MAGIC_NUMBER)
+            {
+                throw new IOException("magic number not right");
+            }
+            while (true)
+            {
+                inbits = ((BitInputStream)in).read(1);
+                if (inbits == -1)
+                {
+                    throw new IOException("unexpected end of input file");
+                }
+                else
+                {
+                    if ((inbits & 1) == 0)
+                    {
+                        traversal(((HuffInternalNode)node).left());
+                    }
+                    else
+                    {
+                        traversal(((HuffInternalNode)node).right());
+                    }
+                    if (node.isLeaf())
+                    {
+                        if (((HuffLeafNode)node).element() == PSEUDO_EOF)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            out.write(((HuffLeafNode)node).element());
+                        }
+                    }
+                }
+            }
+            in.close();
+            out.close();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * create a method called reBuildTree
+     *
+     * @return a HuffBaseNode type
+     * @throws IOException
+     */
+    public HuffBaseNode reBuildTree()
+        throws IOException
+    {
+        bit = ((BitInputStream)bits).read(1);
+        if (bit == 0)
+        {
+            node = new HuffInternalNode(reBuildTree(), reBuildTree(), 0);
+        }
+        else if (bit == 1)
+        {
+            bit = ((BitInputStream)bits).read(9);
+            return new HuffLeafNode((char)bit, 0);
+        }
+        return node;
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * create a method called buildTree
+     *
+     * @param Hheap
+     *            is a MinHeap type
+     * @return a HuffTree object
+     */
     static HuffTree buildTree(MinHeap Hheap)
     {
         HuffTree tmp1, tmp2, tmp3 = null;
