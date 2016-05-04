@@ -19,19 +19,21 @@ public class CountDisplay
     /**
      * Creating a CharCounter
      */
-    ICharCounter        cc = new CharCounter();
+    ICharCounter           cc    = new CharCounter();
     /**
      * Creating a BitInputStream
      */
-    private InputStream bits;
+    private InputStream    bits;
 
-    static MinHeap      Hheap;
+    static MinHeap         Hheap;
 
     private String[]       coding;
 
-    ArrayListStack<String> stack = new ArrayListStack<String>(      );
+    ArrayListStack<String> stack = new ArrayListStack<String>();
 
-    HuffTree tree;
+    HuffTree               tree;
+
+    int number = 0;
 
 
     public void initialize(InputStream stream)
@@ -106,13 +108,13 @@ public class CountDisplay
                 x++;
             }
         }
-        //treeArr[count + 1] = new HuffTree((char)PSEUDO_EOF, 1);
+        treeArr[count + 1] = new HuffTree((char)PSEUDO_EOF, 1);
 
         Hheap = new MinHeap(treeArr, count, 256);
         HuffTree tree1 = buildTree(Hheap);
         System.out.println();
-        traversal(tree1.root(), count, 0);
-
+        coding = new String[count];
+        traversal(tree1.root());
     }
 
 
@@ -122,60 +124,49 @@ public class CountDisplay
      *
      * @param node
      *            is a HuffBaseNode type
-     * @param count
-     *            is an integer array type
-     * @param index
-     *            is an integer type
      */
-    public void traversal(HuffBaseNode node, int count, int index)
+    public void traversal(HuffBaseNode node)
     {
-        coding = new String[count];
-        if(node == null) {
+        if (node == null)
+        {
             return;
         }
-
-        if(node.isLeaf()) {
+        if (node.isLeaf())
+        {
             String s = new String();
-            for(int i = 0; i<stack.size();i++) {
-                   s += stack.get(i);
+            for (int i = 0; i < stack.size(); i++)
+            {
+                s += stack.get(i);
             }
-            System.out.println(((HuffLeafNode)node).element()+" "+s);
-            coding[index] = s;
-            index++;
+            System.out.println(((HuffLeafNode)node).element() + " " + s);
+            coding[number] = ((HuffLeafNode)node).element() + " " + s;
+            number++;
             stack.pop();
         }
 
-        else {
+        else
+        {
             stack.push("0");
-            traversal(((HuffInternalNode)node).left(),count,index+1);
+            traversal(((HuffInternalNode)node).left());
             stack.push("1");
-            traversal(((HuffInternalNode)node).right(),count,index+1);
-            if(stack.size() > 0) {
+            traversal(((HuffInternalNode)node).right());
+            if (stack.size() > 0)
+            {
                 stack.pop();
             }
         }
-
-
     }
-
-
 
 
     // ----------------------------------------------------------
     /**
-     * create a method called printArray to print the encoding
-     *
-     * @param array
-     *            is an integer array
-     * @param n
-     *            is an integer
+     * create a method called disphayCoding
      */
-    public void printArray(int array[], int n)
+    public void displayCoding()
     {
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < coding.length; i++)
         {
-            System.out.printf("%d", array[i]);
-            System.out.println();
+            System.out.println(coding[i]);
         }
     }
 
@@ -185,10 +176,8 @@ public class CountDisplay
         BitOutputStream out = new BitOutputStream("test.txt");
         out.write(BITS_PER_INT, MAGIC_NUMBER);
         traverse(tree.root(), out);
-        out.write(1, 1);
-        out.write(9, PSEUDO_EOF);
-        String [] array = new String[257];
-        int count = 0;
+        String encoding = new String();
+        char[] encodingCharArray;
 
         BitInputStream bits;
         try
@@ -197,14 +186,14 @@ public class CountDisplay
             int inbits;
             try
             {
-                while((inbits = bits.read(BITS_PER_WORD)) != -1) {
-                    for (int k = 0; k < ALPH_SIZE; k++) {
-                          int occs = cc.getCount(k);
-                          for(int i = 0;i<array.length;i++) {
-                              if (i == occs) {
-
-                              }
-                          }
+                while ((inbits = bits.read(BITS_PER_WORD)) != -1)
+                {
+                    for(int i = 0;i<coding.length;i++) {
+                        encoding += coding[i];
+                    }
+                    encodingCharArray = encoding.toCharArray();
+                    for(int j = 0;j<encodingCharArray.length;j++) {
+                        out.write(1,(int)encodingCharArray[j]);
                     }
                 }
 
