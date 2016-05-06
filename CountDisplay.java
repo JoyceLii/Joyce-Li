@@ -10,7 +10,8 @@ import java.io.OutputStream;
  * Write a one-sentence summary of your class here. Follow it with additional
  * details about its purpose, what abstraction it represents, and how to use it.
  *
- * @author Camden Fischer Ruoting Li
+ * @author Camden Fischer
+ * @author Ruoting Li
  * @version Apr 11, 2016
  */
 public class CountDisplay
@@ -111,7 +112,7 @@ public class CountDisplay
                 x++;
             }
         }
-        // treeArr[count + 1] = new HuffTree((char)PSEUDO_EOF, 1);
+       treeArr[count] = new HuffTree((char)PSEUDO_EOF, 1);
 
         Hheap = new MinHeap(treeArr, count, 256);
         HuffTree tree1 = buildTree(Hheap);
