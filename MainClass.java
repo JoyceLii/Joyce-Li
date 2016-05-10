@@ -4,8 +4,7 @@ import java.io.IOException;
 
 // -------------------------------------------------------------------------
 /**
- * Write a one-sentence summary of your class here. Follow it with additional
- * details about its purpose, what abstraction it represents, and how to use it.
+ * Write the main method to test the CharCount class
  *
  * @author Ruoting Li
  * @author Camden Fischer
@@ -25,7 +24,6 @@ public class MainClass
     {
         CharCounter cc = new CharCounter();
         CountDisplay a = new CountDisplay();
-
         BitInputStream bit = null;
         try
         {
@@ -36,7 +34,6 @@ public class MainClass
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-
         try
         {
             cc.countAll(bit);
@@ -56,9 +53,8 @@ public class MainClass
             }
         }
 
-        a.showCodings();
-        System.out.println();
-        a.displayCoding();
+       a.showCodings();
+       System.out.println();
 
     }
 }

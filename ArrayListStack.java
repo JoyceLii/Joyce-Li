@@ -32,8 +32,8 @@ public class ArrayListStack<T>
         list = new ArrayList<T>();
     }
 
-
     // ~ Methods ..............................................................
+
 
     // ----------------------------------------------------------
     /**
@@ -107,7 +107,9 @@ public class ArrayListStack<T>
         return (list.size() == 0);
     }
 
-    public T get(int i) {
+
+    public T get(int i)
+    {
         if (list.size() != 0)
         {
             return list.get(i);

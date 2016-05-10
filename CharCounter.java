@@ -8,7 +8,7 @@ import java.io.InputStream;
  *
  * @author Ruoting Li
  * @author Camden Fischer
- * @version (2016.04.12)
+ * @version May 9th 2016
  */
 public class CharCounter
     implements ICharCounter, IHuffConstants

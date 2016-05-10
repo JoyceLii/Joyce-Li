@@ -18,7 +18,8 @@ import java.io.*;
  * @version 2.0, October 2004
  */
 
-public class BitOutputStream extends OutputStream
+public class BitOutputStream
+    extends OutputStream
 {
 
     private OutputStream     myOutput;
@@ -30,7 +31,6 @@ public class BitOutputStream extends OutputStream
         0x7fff, 0xffff, 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff,
         0x7fffff, 0xffffff, 0x1ffffff, 0x3ffffff, 0x7ffffff, 0xfffffff,
         0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff };
-
     private static final int BITS_PER_BYTE = 8;
 
 
@@ -75,7 +75,8 @@ public class BitOutputStream extends OutputStream
      *             if opening file fails for either FileNotFound or for Security
      *             exceptoins
      */
-    public BitOutputStream(String filename){
+    public BitOutputStream(String filename)
+    {
         try
         {
             myOutput = new BufferedOutputStream(new FileOutputStream(filename));
@@ -160,7 +161,6 @@ public class BitOutputStream extends OutputStream
      * @throws RuntimeException
      *             if there's an I/O problem writing bits
      */
-
     public void write(int howManyBits, int value)
     {
         value &= bmask[howManyBits]; // only right most bits valid
